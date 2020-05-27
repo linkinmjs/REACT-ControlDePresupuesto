@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Pregunta from "./components/Pregunta";
 import Formulario from "./components/Formulario";
 import Listado from "./components/Listado"
 import ControlPresupuesto from "./components/ControlPresupuesto"
+
+
 import { act } from 'react-dom/test-utils';
 
 function App() {
@@ -12,16 +14,28 @@ function App() {
   const [ restante, guardarRestante ] = useState(0);
   const [ mostrarpregunta, actualizarPregunta ] = useState(true);
   const [ gastos,guardarGastos ] = useState([]);
+  const [ gasto, guardarGasto ] = useState({});
+  const [ creargasto, guardarCrearGasto ] = useState(false);
 
-  // cuando agreguemos un nuevo gasto
-  const agregarNuevoGasto = gasto => {
-    guardarGastos([
-      ...gastos,
-      gasto
-    ])
+  // useEffect que actualiza el restante
 
+  useEffect( () => {
+    if(creargasto){
 
-  }
+      // Agrega el nuevo presupuesto
+      guardarGastos([
+        ...gastos,
+        gasto
+      ]);
+
+      // Resta del presupuesto actual
+      const presupuestoRestante = restante - gasto.cantidad;
+      guardarRestante(presupuestoRestante);
+
+      // Resetear a false
+      guardarCrearGasto(false);
+    }
+  },[gasto])
 
   return (
     <div className="container">
@@ -40,7 +54,8 @@ function App() {
               <div className="row">
                 <div className="one-half column">
                   <Formulario 
-                    agregarNuevoGasto={agregarNuevoGasto}
+                    guardarGasto={guardarGasto}
+                    guardarCrearGasto={guardarCrearGasto}
                   />
                 </div>
                 <div className="one-half column">
